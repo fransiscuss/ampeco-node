@@ -1,6 +1,6 @@
 {
   "name": "@fransiscuss/ampeco",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Unofficial TypeScript client for the AMPECO EV Charging Platform Public API.",
   "license": "MIT",
   "author": "Fransiscus Setiawan",
@@ -12,7 +12,14 @@
     "url": "https://github.com/fransiscuss/ampeco-node/issues"
   },
   "homepage": "https://github.com/fransiscuss/ampeco-node#readme",
-  "keywords": ["ampeco", "cpms", "ev", "charging", "ocpp", "ocpi"],
+  "keywords": [
+    "ampeco",
+    "cpms",
+    "ev",
+    "charging",
+    "ocpp",
+    "ocpi"
+  ],
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -24,8 +31,14 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
-  "engines": { "node": ">=18" },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsup src/index.ts --format esm,cjs --dts --clean",
     "check": "tsc --noEmit",
