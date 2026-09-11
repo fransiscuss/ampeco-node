@@ -3,7 +3,10 @@
   "version": "0.2.0",
   "description": "Unofficial TypeScript client for the AMPECO EV Charging Platform Public API.",
   "license": "MIT",
-  "author": "Fransiscus Setiawan",
+  "author": {
+    "name": "Fransiscus Setiawan",
+    "url": "https://fransiscuss.com"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fransiscuss/ampeco-node.git"

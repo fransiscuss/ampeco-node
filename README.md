@@ -117,4 +117,4 @@ Report vulnerabilities privately through [GitHub Security Advisories](https://gi
 
 ## License
 
-MIT
+MIT. Built and maintained by [Fransiscus Setiawan](https://fransiscuss.com).
