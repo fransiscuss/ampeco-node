@@ -88,7 +88,10 @@ export class ChargePointsClient extends WritableResourceClient<ChargePoint, Char
   }
   public async startCharging(chargePointId: number, evseIdOrRequest?: number | StartSessionRequest, requestOrSignal?: StartSessionRequest | AbortSignal, signal?: AbortSignal): Promise<StartChargingResult | undefined> {
     const [evseId, request, abortSignal] = typeof evseIdOrRequest === "number"
-      ? [evseIdOrRequest, requestOrSignal instanceof AbortSignal ? undefined : requestOrSignal, signal]
+      ? requestOrSignal instanceof AbortSignal
+        // startCharging(id, evseId, signal): the signal arrives in the request slot.
+        ? [evseIdOrRequest, undefined, requestOrSignal]
+        : [evseIdOrRequest, requestOrSignal, signal]
       : [undefined, evseIdOrRequest, requestOrSignal instanceof AbortSignal ? requestOrSignal : undefined];
     const path = `${paths.chargePointActions}/${segment(chargePointId)}/start${evseId === undefined ? "" : `/${segment(evseId)}`}`;
     return (await this.api.post<StartChargingResult>(path, request, { signal: abortSignal })).data;

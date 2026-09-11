@@ -46,7 +46,7 @@ export class AmpecoApiClient {
     const tenant = options.tenantUrl.trim().replace(/\/+$/, "");
     this.baseUrl = `${/https?:\/\//i.test(tenant) ? tenant : `https://${tenant}`}/public-api/`;
     this.fetchImplementation = options.fetch ?? globalThis.fetch;
-    if (!this.fetchImplementation) throw new Error("No fetch implementation is available; use Node.js 18+ or provide options.fetch.");
+    if (!this.fetchImplementation) throw new Error("No fetch implementation is available; use Node.js 20+ or provide options.fetch.");
 
     this.defaultPerPage = clampPerPage(options.defaultPerPage ?? 100);
     this.defaults = new Headers(options.headers);
@@ -147,7 +147,9 @@ export class AmpecoApiClient {
     });
     const text = await response.text();
     if (!response.ok) throw createApiError(response, text);
-    if (response.status === 204 || text.trim() === "" || text.trim() === "[]") return { data: undefined as T, response };
+    // 204 and a genuinely empty body carry no payload. `[]` is valid JSON and used to be
+    // discarded here, which turned an empty list into `undefined` for the caller.
+    if (response.status === 204 || text.trim() === "") return { data: undefined as T, response };
     try {
       return { data: JSON.parse(text) as T, response };
     } catch {

@@ -1,6 +1,11 @@
 # @fransiscuss/ampeco
 
-An unofficial, hand-written TypeScript SDK for the [AMPECO EV Charging Platform Public API](https://developers.ampeco.com). It is designed for Node.js 18+ backend services and is not affiliated with AMPECO.
+[![CI](https://github.com/fransiscuss/ampeco-node/actions/workflows/ci.yml/badge.svg)](https://github.com/fransiscuss/ampeco-node/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/%40fransiscuss%2Fampeco)](https://www.npmjs.com/package/@fransiscuss/ampeco)
+[![node](https://img.shields.io/node/v/%40fransiscuss%2Fampeco)](https://nodejs.org)
+[![license](https://img.shields.io/npm/l/%40fransiscuss%2Fampeco)](LICENSE)
+
+An unofficial, hand-written TypeScript SDK for the [AMPECO EV Charging Platform Public API](https://developers.ampeco.com). It is designed for Node.js 20+ backend services and is not affiliated with AMPECO.
 
 The API token is a server secret. Do not bundle this package with a token into browser code.
 
@@ -68,7 +73,7 @@ for await (const session of ampeco.sessions.stream({ userId: 123 })) {
 
 ## Errors
 
-Non-2xx responses throw `AmpecoApiError`. It retains the HTTP status, raw response, response headers, and per-field validation messages returned by HTTP 422.
+Non-2xx responses throw `AmpecoApiError`. It retains the HTTP status, raw response, response headers, and per-field validation messages returned by HTTP 422. The raw body can contain customer data, so redact it before forwarding an error to a log aggregator — see [SECURITY.md](SECURITY.md).
 
 ```ts
 import { AmpecoApiError } from "@fransiscuss/ampeco";
@@ -105,6 +110,10 @@ Use Conventional Commit titles. The release workflow runs release-please on `mai
 - environment: `npm`
 
 No `NPM_TOKEN` is stored in GitHub.
+
+## Security
+
+Report vulnerabilities privately through [GitHub Security Advisories](https://github.com/fransiscuss/ampeco-node/security/advisories/new). See [SECURITY.md](SECURITY.md) for how to handle API tokens.
 
 ## License
 
