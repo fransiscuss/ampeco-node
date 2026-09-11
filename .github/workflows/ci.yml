@@ -16,14 +16,35 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Every Node.js release the package claims to support in `engines`.
+        node-version: [20, 22, 24]
+    name: verify (node ${{ matrix.node-version }})
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
       - run: npm ci
       - run: npm run check
       - run: npm test
-      - run: npm run integration
-      - run: npm pack --dry-run
+      - name: Local HTTP integration harness
+        run: npm run integration
+      - name: Verify npm package contents
+        run: npm pack --dry-run
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # Dependabot handles routine bumps; this fails the build on a known
+      # high-severity advisory in the dependency tree.
+      - run: npm audit --audit-level=high
