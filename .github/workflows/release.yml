@@ -1,0 +1,70 @@
+name: release
+
+# release-please creates a Release PR from Conventional Commits. Merging that
+# PR creates the GitHub release/tag and publishes through npm Trusted
+# Publishing (OIDC), so no NPM_TOKEN is needed or stored in this repository.
+# npm trusted publisher: owner=fransiscuss repository=ampeco-node
+# workflow=release.yml environment=npm
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to publish (for retrying a failed publish)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v5
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release-please
+    if: always() && (needs.release-please.outputs.release_created == 'true' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || needs.release-please.outputs.tag_name }}
+      - uses: actions/setup-node@v7
+        with:
+          # npm Trusted Publishing requires Node >= 22.14 and npm >= 11.5.1.
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      # setup-node writes an empty _authToken entry with registry-url. Remove
+      # it so npm can start its OIDC Trusted Publishing token exchange.
+      - name: Enable npm Trusted Publishing authentication
+        run: |
+          npmrc_path="$(npm config get userconfig)"
+          sed -i '/_authToken/d' "$npmrc_path"
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npm run integration
+      - run: npm publish --access public

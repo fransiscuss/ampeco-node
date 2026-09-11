@@ -1,0 +1,10 @@
+node_modules/
+coverage/
+*.tgz
+.env
+.env.*
+!.env.example
+test/
+src/
+tsconfig.json
+vitest.config.ts

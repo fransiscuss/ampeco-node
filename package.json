@@ -1,0 +1,44 @@
+{
+  "name": "@fransiscuss/ampeco",
+  "version": "0.1.0",
+  "description": "Unofficial TypeScript client for the AMPECO EV Charging Platform Public API.",
+  "license": "MIT",
+  "author": "Fransiscus Setiawan",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fransiscuss/ampeco-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fransiscuss/ampeco-node/issues"
+  },
+  "homepage": "https://github.com/fransiscuss/ampeco-node#readme",
+  "keywords": ["ampeco", "cpms", "ev", "charging", "ocpp", "ocpi"],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "integration": "tsx test/integration-harness.ts",
+    "prepack": "npm run build",
+    "verify": "npm run check && npm test && npm run integration && npm pack --dry-run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.11"
+  }
+}
