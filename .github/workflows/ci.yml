@@ -19,8 +19,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Every Node.js release the package claims to support in `engines`.
-        node-version: [20, 22, 24]
+        # Every current Node.js major the `engines` range admits. Keep this in
+        # step with `engines.node` in package.json: a major that is supported but
+        # untested is a claim CI cannot back.
+        node-version: [20, 22, 24, 26]
     name: verify (node ${{ matrix.node-version }})
     steps:
       - uses: actions/checkout@v7
