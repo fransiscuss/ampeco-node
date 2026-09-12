@@ -57,3 +57,35 @@ describe("AmpecoClient", () => {
     expect(init?.body).toBe('{"userId":77,"stopConditions":{"maxEnergyKwh":20}}');
   });
 });
+
+describe("AmpecoApiClient response handling", () => {
+  it("keeps an empty JSON array instead of turning it into undefined", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(new Response("[]", { status: 200 }));
+    const client = new AmpecoClient({ tenantUrl: "https://example.test", apiKey: "token", fetch });
+
+    await expect(client.api.get<unknown[]>("resources/anything")).resolves.toMatchObject({ data: [] });
+  });
+
+  it("still treats 204 and an empty body as no payload", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>()
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(new Response("", { status: 200 }));
+    const client = new AmpecoClient({ tenantUrl: "https://example.test", apiKey: "token", fetch });
+
+    await expect(client.api.get("resources/anything")).resolves.toMatchObject({ data: undefined });
+    await expect(client.api.get("resources/anything")).resolves.toMatchObject({ data: undefined });
+  });
+
+  it("honours an AbortSignal passed in place of the start-session body", async () => {
+    const controller = new AbortController();
+    const fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(new Response("", { status: 202 }));
+    const client = new AmpecoClient({ tenantUrl: "https://example.test", apiKey: "token", fetch });
+
+    await client.chargePoints.startCharging(5, 2, controller.signal);
+
+    const [url, init] = fetch.mock.calls[0] ?? [];
+    expect(String(url)).toContain("/actions/charge-point/v1.0/5/start/2");
+    expect(init?.signal).toBe(controller.signal);
+    expect(init?.body).toBeUndefined();
+  });
+});
