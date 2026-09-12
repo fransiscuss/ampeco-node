@@ -1,6 +1,6 @@
 {
   "name": "@fransiscuss/ampeco",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Unofficial TypeScript client for the AMPECO EV Charging Platform Public API.",
   "license": "MIT",
   "author": {
